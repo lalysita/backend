@@ -8,10 +8,27 @@ import { ProductsService } from './products/products.service';
 import { CustomersService } from './customers/customers.service';
 import { ProductsModule } from './products/products.module';
 import { TagsModule } from './tags/tags.module';
+import { UsersModule } from './users/users.module';
+import { User } from './users/entities/user.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Product } from './products/entitys/entity.product';
 
 @Module({
-  imports: [ProductsModule, TagsModule],
+  imports: [ProductsModule, TagsModule,TypeOrmModule.forRoot({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5432,
+    username: 'postgres',
+    password: '12345',
+    database: 'nestjs',
+    entities:[User, Product],
+    retryDelay:3000,
+    autoLoadEntities:true,
+    synchronize: true,
+  }),UsersModule],
   controllers: [AppController, ProductsController, CustomersController, UsersController],
-  providers: [AppService, ProductsService, CustomersService],
+  providers: [AppService, CustomersService],
 })
-export class AppModule {}
+export class AppModule {
+  
+}

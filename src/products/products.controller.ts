@@ -7,22 +7,17 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsService) {}
 
     @Get()
-    getAllProducts(): Product[] {
+    getAllProducts():Promise<Product[]> {
         return this.productsService.getAll();
     }
     
     @Post()
-    @HttpCode(201)
-    createProducts(
-        @Body('name') name: string,
-        @Body('description') description: string
-    ) {
-        this.productsService.insert({
-            id: this.productsService.getAll().length,
-            name,
-            description
-        });
-    }
+  @HttpCode(HttpStatus.NO_CONTENT)
+  insert(
+    @Body() body,
+  ) {
+    this.productsService.insert(body);
+  }
 
     @Get('inventario')
     getHelloInProducts(): string{

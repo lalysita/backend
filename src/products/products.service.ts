@@ -1,77 +1,57 @@
-import { Injectable } from '@nestjs/common';
-import { Product } from './interface/product/product.interface';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Product } from './entitys/entity.product'; // Asegúrate de que la ruta esté correcta
 
 @Injectable()
 export class ProductsService {
-    private products: Product[] = [
-        {
-            id: 0,
-            name: 'Vela aromática',
-            description: 'Esta vela olor a rosas',
-          },
-          {
-            id: 1,
-            name: 'Marco de fotos pequeño',
-            description: 'Marco ideal para fotos 10x15',
-          },
-          {
-            id: 2,
-            name: 'Marco de fotos mediano',
-            description: 'Marco ideal para fotos 20x25',
-          },
-          {
-            id: 3,
-            name: 'Marco de fotos grande',
-            description: 'Marco ideal para fotos 40x30',
-          },
-          {
-            id: 4,
-            name: 'Marco de fotos grande',
-            description: 'Marco ideal para fotos 40x30',
-          }
-    ];
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+  ) {}
 
-    getAll(): Product[] {
-        return this.products;
-    }
+  // READ ALL
+  async getAll(): Promise<Product[]> {
+    return this.productRepository.find();
+  }
 
-    //READ
-    getId(id:number) {
-        return this.products.find( (item: Product) => item.id == id);
+  // READ by ID
+  async getId(id: number): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+    if (!product) throw new NotFoundException(`Product with id ${id} not found`);
+    return product;
+  }
+
+  // CREATE
+  async insert(body: any): Promise<Product> {
+    const product = this.productRepository.create({
+      name: body.name,
+      description: body.description, // Asegúrate de usar el campo correcto (description en lugar de descripcion)
+      stock: body.stock,
+    });
+    return this.productRepository.save(product);
+  }
+
+  // UPDATE
+  async update(id: number, body: any): Promise<Product> {
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new Error('Product not found'); // Aquí puedes lanzar un NotFoundException de NestJS si lo prefieres
     }
 
-    //CREATE
-    insert(body: any) {
-        this.products = [
-            ...this.products,
-            {
-                id: this.lastId() + 1,
-                name: body.name,
-                description: body.descripcion,
-            }
-        ]
-    }
- 
-    //UPDATE
-    update(id: number, body: any) {
-        let product: Product = {
-          id,
-          name: body.name,
-          description: body.description,
-        }
-        this.products = this.products.map( (item: Product) => {
-          console.log(item, id, item.id == id);
-          return item.id == id ? product : item;
-        });
-    }
+    product.name = body.name;
+    product.description = body.description;
+    product.stock = body.stock;
 
-    //DELETE
-    delete(id: number) {
-        this.products = this.products.filter( (item: Product) => item.id != id );
+    return this.productRepository.save(product);
+  }
+
+  // DELETE
+  async delete(id: number): Promise<void> {
+    const product = await this.productRepository.findOneBy({ id });
+    if (!product) {
+      throw new Error('Product not found'); // O puedes usar un NotFoundException
     }
-    
-    private lastId(): number {
-        return this.products[this.products.length -1].id;
-    }
+    await this.productRepository.remove(product);
+  }
 }
-
