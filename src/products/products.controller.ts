@@ -1,113 +1,43 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, Put, Res } from '@nestjs/common';
 import {ProductsService} from '../products/products.service';
 import { Product } from './interface/product/product.interface';
+import { UpdateProductsDto } from './dto/products.dto/updateProducts.dto';
+import { CreateProductsDto } from './dto/products.dto/products.dto';
 
 @Controller('products')
 export class ProductsController {
-    constructor(private readonly productsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) {}
 
-    @Get()
-    getAllProducts():Promise<Product[]> {
-        return this.productsService.getAll();
-    }
-    
-    @Post()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  insert(
-    @Body() body,
-  ) {
-    this.productsService.insert(body);
+  
+  @Get()
+  async findAll(): Promise<Product[]> {
+    return this.productsService.findAll();
   }
 
-    @Get('inventario')
-    getHelloInProducts(): string{
-        return "Estamos en productos con una funcionalidad nueva!!"
-    }
-//Recibir un parametro en la URL
-    // @Get(':id')
-    // find(@Param() params) {
-    //     return `Estas consultando el producto ${params.id}`;
-    // }
+ 
+  @Get(':id')
+  async findOne(@Param('id') id: number): Promise<Product> {
+    return this.productsService.findOne(id);
+  }
 
-//RECIBIR VARIOS PARAMETROS EN LA URL
+  
+  @Post()
+  async create(@Body() createProductDto: CreateProductsDto): Promise<Product> {
+    return this.productsService.create(createProductDto);
+  }
 
-    // @Get(':id/:size')
-    // findWithSize( @Param() params) {
-    //     return `productos con id: ${params.id} ----- size: ${params.size}`;
-    // }
+  
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() updateProductDto: UpdateProductsDto,
+  ): Promise<Product> {
+    return this.productsService.update(id, updateProductDto);
+  }
 
-//DESESTRUCTURAR PARAMETROS DE URL
-
-    // @Get(':id')
-    // find(@Param('id') id: number) {
-    //     return `Pagina del producto ${id}`;
-    // }
-
-//RECIBIR VARIOS PARAMETROS EN LA URL TIPADOS Y DESAGREGADOS
-
-    @Get(':id/:size')
-    findWithSize( @Param('id') id: number, @Param('size') size: string) {
-        return `productos con id: ${id} ----- size: ${size}`;
-    }
-
-//USO DE POST
-
-    @Post()
-    @HttpCode(HttpStatus.NO_CONTENT)
-    createProduct(@Body() body){
-        return body
-    }
-
-    //@Post()
-    //@HttpCode()
-    //crearteProduct(
-    //    @Body('name') name: string,
-    //    @Body('description') description: string,
-    //) {
-    //    return `Crear producto ${name} con la descripcion: ${description}`;
-    //}
-
-    @Get('ruta-error-404')
-    @HttpCode(HttpStatus.NOT_FOUND)
-    rutaConError404() {
-        return 'Esto es un error 404!! no existe';
-    }
-
-    //DECORADOR RES
-
-    @Get(':id')
-    find(@Res() response, @Param('id', ParseIntPipe) id:number) {
-        if(id<100) {
-            return response.status(HttpStatus.OK).send(`Pagina del producto: ${id}`);
-        } else {
-            return response.status(HttpStatus.NOT_FOUND).send(`Producto inexistente`);
-        }
-    }
-
-    //DECORADOR PUT
-
-    @Put(':id')
-    update(@Param('id') id: number, @Body() body) {
-        return `Estas haciendo una operacion de actualizacion del recurso ${id} con ${body.name} 
-        y ${body.description}`;
-    }
-
-    //DECORADOR PATCH
-
-    @Patch(':id')
-    partialUpdate(@Param('id') id: number, @Body() body) {
-        return `Actualización parcial del itam ${id}`;
-    }
-
-    //DECORADOR DELETE
-
-    @Delete(':id')
-    @HttpCode(HttpStatus.NO_CONTENT)
-    delete(@Param('id') id: number) {
-        return `Hemos borrado el producto ${id}`;
-    }
-
-
-
+  
+  @Delete(':id')
+  async remove(@Param('id') id: number): Promise<void> {
+    return this.productsService.remove(id);
+  }
 }
-

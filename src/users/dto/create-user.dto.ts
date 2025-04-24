@@ -13,5 +13,7 @@ export class CreateUserDto {
     birthday: Date;
     @IsNotEmpty()
     identificacion: number;
+
+    productIds: number[]; 
   }
   

@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './products/entitys/entity.product';
+import { SizeModule } from './size/size.module';
 
 @Module({
   imports: [ProductsModule, TagsModule,TypeOrmModule.forRoot({
@@ -25,8 +26,8 @@ import { Product } from './products/entitys/entity.product';
     retryDelay:3000,
     autoLoadEntities:true,
     synchronize: true,
-  }),UsersModule],
-  controllers: [AppController, ProductsController, CustomersController, UsersController],
+  }),UsersModule, SizeModule],
+  controllers: [AppController, CustomersController, UsersController],
   providers: [AppService, CustomersService],
 })
 export class AppModule {

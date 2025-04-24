@@ -1,9 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Product } from "src/products/entitys/entity.product";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
-    id:number
+    id:number 
 
     @Column('varchar',{length:50})
     name:string
@@ -11,7 +12,7 @@ export class User {
     @Column('varchar',{length:50})
     last_name:string
 
-    @Column('varchar', { length: 255, nullable: true })  // Asegúrate de que `nullable: true` sea correcto
+    @Column('varchar', { length: 255, nullable: true })  
     descriptions: string;
 
     @Column('varchar',{length:50})
@@ -22,5 +23,8 @@ export class User {
 
     @Column('int',{width:10})
     identificacion:number
+
+    @OneToMany(() => Product, product => product.user)  // Relación inversa en Product
+    products: Product[];
 
 }
