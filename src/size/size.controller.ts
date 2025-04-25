@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { SizeService } from './size.service';
 import { CreateSizeDto } from './dto/create-size.dto';
 import { UpdateSizeDto } from './dto/update-size.dto';
@@ -10,6 +10,14 @@ export class SizeController {
   @Post()
   async create(@Body() createSizeDto: CreateSizeDto) {
     return await this.sizeService.create(createSizeDto);
+  }
+
+  @Get('equivalents')
+  getEquivalents(
+    @Query('size') size: string,
+    @Query('type') type: 'hombre' | 'mujer' | 'niño',
+  ) {
+    return this.sizeService.getEquivalents(size, type);
   }
 
   @Get()
