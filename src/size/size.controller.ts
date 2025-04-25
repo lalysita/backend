@@ -3,32 +3,33 @@ import { SizeService } from './size.service';
 import { CreateSizeDto } from './dto/create-size.dto';
 import { UpdateSizeDto } from './dto/update-size.dto';
 
-@Controller('size')
+@Controller('sizes')
 export class SizeController {
   constructor(private readonly sizeService: SizeService) {}
 
   @Post()
-  create(@Body() createSizeDto: CreateSizeDto) {
-    return this.sizeService.create(createSizeDto);
+  async create(@Body() createSizeDto: CreateSizeDto) {
+    return await this.sizeService.create(createSizeDto);
   }
 
   @Get()
-  findAll() {
-    return this.sizeService.findAll();
+  async findAll() {
+    return await this.sizeService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.sizeService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return await this.sizeService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSizeDto: UpdateSizeDto) {
-    return this.sizeService.update(+id, updateSizeDto);
+  async update(@Param('id') id: string, @Body() updateSizeDto: UpdateSizeDto) {
+    return await this.sizeService.update(+id, updateSizeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.sizeService.remove(+id);
+  async remove(@Param('id') id: string) {
+    await this.sizeService.remove(+id);
+    return { message: `Size with ID ${id} has been deleted successfully.`};
   }
 }
